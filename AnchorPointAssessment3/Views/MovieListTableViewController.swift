@@ -10,7 +10,6 @@ import UIKit
 
 class MovieListTableViewController: UITableViewController {
 
-    let movieController = MovieController()
     
     var movies: [Movie] = [] {
         didSet {
@@ -36,7 +35,7 @@ class MovieListTableViewController: UITableViewController {
         
         let movie = movies[indexPath.row]
         cell?.movie = movie
-        movieController.fetchMovieImageWith(movie: movie) { (image) in
+        MovieController.shared.fetchMovieImageWith(movie: movie) { (image) in
             DispatchQueue.main.async {
                 cell?.movieImage.image = image
             }
@@ -45,12 +44,21 @@ class MovieListTableViewController: UITableViewController {
         return cell ?? UITableViewCell()
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toDetailVC" {
+            guard let destinationVC = segue.destination as? MovieDetailViewController, let indexPath = tableView.indexPathForSelectedRow else {return}
+            let movie = movies[indexPath.row]
+            destinationVC.movie = movie
+        }
+        
+    }
+    
 }
 
 extension MovieListTableViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchTerm = searchBar.text else {return}
-        movieController.fetchMovieWith(searchTerm: searchTerm) { (movie) in
+        MovieController.shared.fetchMovieWith(searchTerm: searchTerm) { (movie) in
             self.movies = movie
             DispatchQueue.main.async {
                 self.tableView.reloadData()

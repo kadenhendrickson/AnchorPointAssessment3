@@ -10,6 +10,9 @@ import UIKit
 
 class MovieController {
     
+    static let shared = MovieController()
+
+    
     
     func fetchMovieWith(searchTerm: String, completion: @escaping ([Movie]) -> Void) {
         
